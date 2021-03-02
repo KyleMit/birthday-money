@@ -7,7 +7,7 @@
     <title>Birthday Money</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎂</text></svg>"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><text y=%22.9em%22 font-size=%2290%22>🎂</text></svg>"
     />
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
@@ -34,13 +34,14 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        text-align: center;
       }
       input,
       button {
         border-radius: 4px;
         border: 2px solid black;
         font-size: 1em;
-        width: 150px;
+        width: 218px;
         padding: 4px 8px;
         text-align: center;
       }
@@ -56,24 +57,121 @@
         z-index: 1;
         pointer-events: none;
       }
-      button {
+      .add {
+        width: auto;
+        margin-top: 22px;
+      }
+      .add-1 {
+        background: hsl(105deg 24% 95%);
+      }
+
+      .add-10 {
+        background: #e3ece0;
+      }
+
+      .add-100 {
+        background: hsl(105deg 24% 85%);
+      }
+      .primary {
         background: #1a6f0f;
         color: white;
+        margin-top: 22px;
+      }
+
+      body.loser {
+        background: #f9c6c6;
+      }
+      body.winner {
+        background: #d7ecd7;
+    }
+      .loser button,
+      .winner button {
+        background: #e8e8e8;
+        color: #5a5a5a;
+      }
+      #message {
         margin-top: 22px;
       }
     </style>
   </head>
   <body>
     <main>
-      <h1>Birthday Money</h1>
-      <h2>Enter Your Guess</h2>
+      <h1 id="title">Enter Your Guess</h2>
       <form>
         <div class="form-group">
           <span class="prefix">$</span>
-          <input type="number" min="1" step="1" />
+          <input type="text" readonly value="1" id="amount" />
         </div>
-        <button type="submit">Guess</button>
+        <div class="radio-button">
+          <button class="add add-1">+1</button>
+          <button class="add add-10">+10</button>
+          <button class="add add-100">+100</button>
+        </div>
+        <button type="submit" class="primary" id="claim">Cash Out</button>
       </form>
+      <div id="message"></div>
     </main>
+    <script type="text/javascript">
+      let amountEl = document.getElementById("amount")
+      let titleEl = document.getElementById("title")
+      let messageEl = document.getElementById("message")
+
+      document.querySelector(".add-1").addEventListener("click", (e) => {
+        amountEl.value = 1 + Number(amountEl.value)
+        e.preventDefault()
+        updateGuess()
+      })
+
+      document.querySelector(".add-10").addEventListener("click", (e) => {
+        amountEl.value = 10 + Number(amountEl.value)
+        e.preventDefault()
+        updateGuess()
+      })
+
+      document.querySelector(".add-100").addEventListener("click", (e) => {
+        amountEl.value = 100 + Number(amountEl.value)
+        e.preventDefault()
+        updateGuess()
+      })
+
+      async function updateGuess() {
+        let url = `/api/guess?amount=${amountEl.value}`
+        let resp = await fetch(url)
+        let result = await resp.json()
+
+        if (!result.isValid) {
+          document.body.classList.add("loser")
+          titleEl.innerText = "Loser 😢"
+          messageEl.innerText = `Greedy Greedy - The Limit Was ${result.limit}`
+          disableButtons()
+        }
+      }
+
+      document.getElementById("claim").addEventListener("click", claimReward)
+
+      async function claimReward(e) {
+        e.preventDefault()
+
+        let url = `/api/claim?amount=${amountEl.value}`
+        let resp = await fetch(url)
+        let result = await resp.json()
+
+        if (result.isValid) {
+          document.body.classList.add("winner")
+          titleEl.innerText = `Winner!! 🎉`
+          messageEl.innerText = `Yay, you won $${amountEl.value}, but you could've won $${result.limit}`
+
+
+          disableButtons()
+
+        }
+      }
+
+      function disableButtons() {
+        document.querySelectorAll("button").forEach((btn) => {
+            btn.disabled = true
+          })
+      }
+    </script>
   </body>
 </html>
