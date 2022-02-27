@@ -1,0 +1,21 @@
+html,
+html * {
+  box-sizing: content-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: rgb(231, 231, 180);
+  min-height: 100vh;
+  font-size: 2em;
+  font-family: "Fredoka One", cursive;
+}
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
