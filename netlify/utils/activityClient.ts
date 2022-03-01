@@ -14,8 +14,8 @@ export async function getAllData(): Promise<IActivityData[]> {
   const records = await getAll()
 
   const data = records.map(r => {
-    const {timestamp, choice, round, total} = r
-    return {timestamp, choice, round, total}
+    const {timestamp, choice, round, delta, total} = r
+    return {timestamp, choice, round, delta, total}
   })
 
   return data;
@@ -70,9 +70,10 @@ export async function truncateData(): Promise<void> {
 
 
 export interface IActivityData {
-  choice: string; // safe | risky
-  total: number;
   round: number;
+  choice: string; // safe | risky
+  delta: number;
+  total: number;
 }
 
 interface IActivityInfo extends TableEntity<IActivityData> {}

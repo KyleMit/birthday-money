@@ -1,5 +1,30 @@
 import { Handler } from '@netlify/functions'
-import { createActivity, getAll, IActivityData } from '../utils/activityClient';
+import { createActivity, getAll, getAllData, IActivityData } from '../utils/activityClient';
+
+const roundRiskValue: Record<number,number> = {
+  1: -15,
+  2: -10,
+  3: -5,
+  4: 0,
+  5: 5,
+  6: 10,
+  7: 15,
+  8: 20,
+  9: 25,
+  10: 30,
+  11: 35,
+  12: 40,
+  13: 45,
+  14: 50,
+  15: -50,
+  16: 55,
+  17: 60,
+  18: -60,
+  19: 65,
+  20: 70,
+  21: 75,
+  22: 80
+}
 
 const handler: Handler = async (event, context) => {
 
@@ -11,26 +36,30 @@ const handler: Handler = async (event, context) => {
     }
   }
 
-  const prevRounds = await getAll();
+  const prevRounds = await getAllData();
   const lastRound = await prevRounds.sort((a,b) => b.round - a.round)?.[0]
 
   const curTotal = lastRound?.total || 0
   const curRound = lastRound?.round || 0
 
-  const roundDelta = choice === "safe" ? 5 : 10 // todo implement risky decision
+  const delta = choice === "safe" ? 5 : roundRiskValue[curRound] // todo implement risky decision
 
-  let data: IActivityData = {
-    choice: String(choice),
+  const data: IActivityData = {
     round: curRound + 1,
-    total: curTotal + roundDelta
+    choice: String(choice),
+    delta: delta,
+    total: curTotal + delta
   }
 
   await createActivity(data)
 
+  const allRounds = [...prevRounds, data]
+
   return {
     statusCode: 200,
-    body: JSON.stringify(data, null, 2)
+    body: JSON.stringify(allRounds, null, 2)
   }
 }
+
 
 export { handler }
