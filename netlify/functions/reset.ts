@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions'
-import { truncateData } from './getActivity';
+import { truncateData } from '../utils/activityClient';
 
 const handler: Handler = async (event, context) => {
 

@@ -4,11 +4,21 @@ const connectionString = "DefaultEndpointsProtocol=https;AccountName=birthdaymon
 const activityTableName = "activity"
 const defaultPartitionKey = "GLOBAL-ACTIVITY"
 
-getAll()
 
 function getActivityTableClient(): TableClient {
   const tableClient = TableClient.fromConnectionString(connectionString, activityTableName)
   return tableClient;
+}
+
+export async function getAllData(): Promise<IActivityData[]> {
+  const records = await getAll()
+
+  const data = records.map(r => {
+    const {timestamp, choice, round, total} = r
+    return {timestamp, choice, round, total}
+  })
+
+  return data;
 }
 
 export async function getAll(): Promise<IActivityRecord[]> {
@@ -23,8 +33,6 @@ export async function getAll(): Promise<IActivityRecord[]> {
   for await (const record of listResults) {
     records.push(record)
   }
-
-  console.log(records);
 
   return records;
 }
@@ -61,8 +69,8 @@ export async function truncateData(): Promise<void> {
 }
 
 
-interface IActivityData {
-  choice: string;
+export interface IActivityData {
+  choice: string; // safe | risky
   total: number;
   round: number;
 }
