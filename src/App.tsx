@@ -40,36 +40,29 @@ function App() {
 
 
   return (
-    <div className="App">
-      <main>
-        <h1 id="title">Birthday Money <span>🎂💸</span></h1>
-
+    <main className="App">
+        <h1>Birthday Money <span>🎂💸</span></h1>
         {!isLoading && (
           <>
-          {!gameFinished && (
-            <>
-              <h2>Choose Wisely <span>({curRound}/22)</span></h2>
-              <div>
-                <button className="button" onClick={makeSafeChoice}>$5</button>
-                <button className="button" onClick={makeRiskyChoice}>??</button>
-              </div>
-            </>
-          )}
-          <h2 className="total">
-              <div className={"delta " + (latestRound?.delta >= 0 ? "winner" : "loser") } >
-                {gameUnderway ? deltaDisplay : <>&nbsp;</>}
-              </div>
-            {!gameFinished ? "Total:" : "You Won"}
-            <span className={latestRoundTotal >= 0 ? "winner" : "loser" } >{" $"}{latestRoundTotal}</span>
-
-          </h2>
-
+            {!gameFinished && (
+              <>
+                <h2>Choose Wisely <span>({curRound}/{MAX_ROUNDS})</span></h2>
+                <div>
+                  <button onClick={makeSafeChoice}>$5</button>
+                  <button onClick={makeRiskyChoice}>??</button>
+                </div>
+              </>
+            )}
+            <h2 className="total">
+                <div className={"delta " + (latestRound?.delta >= 0 ? "winner" : "loser") } >
+                  {gameUnderway ? deltaDisplay : <>&nbsp;</>}
+                </div>
+              {!gameFinished ? "Total:" : "You Won"}
+              <span className={latestRoundTotal >= 0 ? "winner" : "loser" } >{" $"}{latestRoundTotal}</span>
+            </h2>
           </>
         )}
-
-
-      </main>
-    </div>
+    </main>
   );
 }
 
