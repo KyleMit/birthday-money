@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions'
-import { createActivity, getAll, getAllData, IActivityData } from '../utils/activityClient';
+import { createActivity, getAllData, IActivityData } from '../utils/activityClient';
 
 const roundRiskValue: Record<number,number> = {
   1: -15,
@@ -40,7 +40,7 @@ const handler: Handler = async (event, context) => {
   const lastRound = await prevRounds.sort((a,b) => b.round - a.round)?.[0]
 
   const curTotal = lastRound?.total || 0
-  const curRound = lastRound?.round || 0
+  const curRound = lastRound?.round || 1
 
   const delta = choice === "safe" ? 5 : roundRiskValue[curRound] // todo implement risky decision
 

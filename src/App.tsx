@@ -8,8 +8,14 @@ function App() {
 
   const sortedRounds = rounds.sort((a,b) => b.round - a.round)
   const latestRound = sortedRounds?.[0]
-  const latestRoundNumber = latestRound?.round || 1
+  const latestRoundNumber = latestRound?.round || 0
   const latestRoundTotal = latestRound?.total || 0
+  const curRound = latestRoundNumber + 1
+  const gameFinished = curRound > MAX_ROUNDS
+  const gameStarted = curRound > 1
+  const gameUnderway = gameStarted && !gameFinished
+
+  const deltaDisplay = (latestRound?.delta > 0 ? "+" : "") + latestRound?.delta
 
   const refreshRounds = async () => {
     const resp = await fetch("/api/get")
@@ -32,19 +38,17 @@ function App() {
     setRounds(data)
   }
 
-  const gameFinished = sortedRounds.length > MAX_ROUNDS
-  // const hasRecords = sortedRounds.length > 0
 
   return (
     <div className="App">
       <main>
-        <h1 id="title">Birthday Money 🎂💸</h1>
+        <h1 id="title">Birthday Money <span>🎂💸</span></h1>
 
         {!isLoading && (
           <>
           {!gameFinished && (
             <>
-              <h2>Choose Wisely ({latestRoundNumber} / 22)</h2>
+              <h2>Choose Wisely <span>({curRound}/22)</span></h2>
               <div>
                 <button className="button" onClick={makeSafeChoice}>$5</button>
                 <button className="button" onClick={makeRiskyChoice}>??</button>
@@ -52,12 +56,9 @@ function App() {
             </>
           )}
           <h2 className="total">
-            {!gameFinished && Boolean(latestRound?.delta) && (
               <div className={"delta " + (latestRound?.delta >= 0 ? "winner" : "loser") } >
-                    {latestRound?.delta >= 0 ? " +" : "" }
-                    {latestRound?.delta}
+                {gameUnderway ? deltaDisplay : <>&nbsp;</>}
               </div>
-            )}
             {!gameFinished ? "Total:" : "You Won"}
             <span className={latestRoundTotal >= 0 ? "winner" : "loser" } >{" $"}{latestRoundTotal}</span>
 
@@ -66,24 +67,7 @@ function App() {
           </>
         )}
 
-        {/* {hasRecords && (
-          <table>
-            <thead>
-              <tr>
-                <th>Round</th>
-                <th>Delta</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedRounds.map(round => <tr>
-                <td>{round.round}</td>
-                <td>{round.choice}</td>
-                <td>{round.total}</td>
-              </tr>)}
-            </tbody>
-          </table>
-        )} */}
+
       </main>
     </div>
   );
